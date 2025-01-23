@@ -8,7 +8,7 @@ import {
   addDonor,
   getDonorHistory,
 } from "../controllers/donor.controller.js";
-import { authenticate } from "../controllers/donor.controller.js"; // You can extract this middleware if needed
+import { authenticate } from "../middlewares/authMiddleware.js"; // You can extract this middleware if needed
 
 const router = express.Router();
 

@@ -16,8 +16,7 @@ app.use(express.json()); // allows us to accept JSON data in the req.body
 // Routes
 app.use("/api/auth", authRoutes);
 
-
 app.listen(PORT, () => {
-	connectDB();
-	console.log("Server started at http://localhost:" + PORT);
+  connectDB();
+  console.log("Server started at http://localhost:" + PORT);
 });
