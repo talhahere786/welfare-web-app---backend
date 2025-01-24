@@ -1,5 +1,4 @@
 import { Donor } from "../models/donor.model.js";
-import jwt from "jsonwebtoken";
 import validator from "validator"; // Import validator for input validation
 
 // Get all donors
