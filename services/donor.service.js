@@ -1,4 +1,5 @@
 import { Donor } from "../models/donor.model.js";
+import { User } from "../models/user.model.js"; // Assuming User model exists
 import validator from "validator"; // Import validator for input validation
 
 // Get all donors
@@ -11,7 +12,16 @@ export const getDonors = async () => {
 };
 // Add a new donor
 export const addDonor = async (donorData, userId) => {
-  const { name, date, amount, paymentMethod, status } = donorData;
+  // Fetch user details from the User table
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  // Prepare donor data
+  const { amount, status } = donorData;
+  const name = user.fullName; // Retrieved from the User model
+  const date = new Date(); // Current date
+  const paymentMethod = "Credit Card"; // Default value
   // Input validation
   if (!name || !validator.isAlpha(name.replace(" ", ""))) {
     throw new Error("Invalid name. Only alphabets and spaces allowed.");
@@ -26,9 +36,9 @@ export const addDonor = async (donorData, userId) => {
   if (!paymentMethod || paymentMethod !== "Credit Card") {
     throw new Error("Payment method must be 'Credit Card'.");
   }
-  if (!status || !["Completed", "Pending", "Failed"].includes(status)) {
+  if (!status || !["paid", "unpaid", "Failed"].includes(status)) {
     throw new Error(
-      "Invalid status. Must be 'Completed', 'Pending', or 'Failed'."
+      "Invalid status. Must be 'paid', 'unpaid', or 'Failed'."
     );
   }
   // Create donor record

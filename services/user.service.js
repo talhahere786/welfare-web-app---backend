@@ -74,7 +74,7 @@ class UserService {
     const { email, password } = credentials;
     // Validate Email
     if (!email) {
-      throw new Error( "Email  is required." );
+      throw new Error("Email  is required.");
     }
     // Find user by email
     const user = await User.findOne({ email: email.toLowerCase() }).collation({
@@ -83,18 +83,17 @@ class UserService {
     });
 
     if (!user) {
-      throw new Error( "User not found" );
+      throw new Error("User not found");
     }
     // Validate Password
     const isMatch = await bcrypt.compare(password.trim(), user.password.trim());
     if (!isMatch) {
-      throw new Error( `Invalid password` );
+      throw new Error(`Invalid password`);
     }
     // Generate JWT Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d", // The token will expire in 1 day
     });
-
     return { message: "Login successful", token };
   } 
 }
