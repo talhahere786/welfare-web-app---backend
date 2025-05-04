@@ -7,9 +7,6 @@ const isValidFormNumber = (formNumber) => /^[A-Z0-9]+$/.test(formNumber);
 // Helper function to validate CNIC
 const isValidCnic = (cnic) => /^\d{13}$/.test(cnic);
 
-// Helper function to validate date
-const isValidDate = (date) => new Date(date) <= new Date();
-
 // Helper function to validate contactNumber
 const isValidContactNumber = (contactNumber) => /^03\d{9}$/.test(contactNumber);
 
@@ -28,11 +25,15 @@ const isValidIncome = (totalIncome) => totalIncome >= 0;
 // Save Family and Children
 export const createFamilyWithChildren = async (familyData, childrenData) => {
   try {
+     console.log("Service members:", familyData.num_of_members);
+    // Set the date to the current date automatically
+    familyData.date = new Date(); // Add this line
+familyData.status = "pending";
     // Validate formNumber
     if (!isValidFormNumber(familyData.formNumber)) {
       throw new Error("Form Number must be alphanumeric.");
     }
-
+ 
     // Check if the formNumber already exists in the database
     const existingFamilyByFormNumber = await Family.findOne({
       formNumber: familyData.formNumber,
@@ -41,10 +42,7 @@ export const createFamilyWithChildren = async (familyData, childrenData) => {
       throw new Error("A family with this Form Number already exists.");
     }
 
-    // Validate date (ensure it's not in the future)
-    if (!isValidDate(familyData.date)) {
-      throw new Error("Date must be a valid date and not in the future.");
-    }
+    
 
     // Validate guardian
     if (
@@ -132,15 +130,15 @@ export const createFamilyWithChildren = async (familyData, childrenData) => {
       throw new Error("Transport must be a valid type (e.g., 'car', 'bus').");
     }
 
-    // Validate num_of_members
-    if (
-      Number.isInteger(familyData.num_of_members) &&
-      familyData.num_of_members > 0
-    ) {
-      // Valid
-    } else {
-      throw new Error("Number of members must be a positive integer.");
-    }
+    // // Validate num_of_members
+    // if (
+    //   Number.isInteger(familyData.num_of_members) &&
+    //   familyData.num_of_members > 0
+    // ) {
+    //   // Valid
+    // } else {
+    //   throw new Error("Number of members must be a positive integer.");
+    // }
 
     // Validate totalIncome
     if (!isValidIncome(familyData.totalIncome)) {
@@ -243,4 +241,13 @@ export const getAllFamiliesWithChildren = async () => {
     console.error("Error fetching families:", error.message);
     throw new Error("Error fetching families: " + error.message);
   }
+};
+
+// Service function to update specific fields
+export const updateFamilyFields = async (familyId, updatedFields) => {
+  return await Family.findByIdAndUpdate(
+    familyId,
+    { $set: updatedFields }, // Only update provided fields
+    { new: true } // Return updated document
+  );
 };
